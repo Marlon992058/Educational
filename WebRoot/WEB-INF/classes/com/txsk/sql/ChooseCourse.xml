@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txsk.dao.IChooseCourseMapper" >
+	<!-- 添加选修课 -->
+	<insert id="add" parameterType="ChooseCourse" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tm_score_choose (
+			course_name,
+			teacher,
+			credit,
+			start_time,
+			end_time
+		)
+		VALUES
+			(
+				#{courseName},
+				#{teacher},
+				#{credit},
+				#{startTime},
+				#{endTime}
+			)
+
+	</insert>
+	<!-- 查询选修课信息 -->
+	<select id="lists" resultType="ChooseCourse" parameterType="TmParams">
+		SELECT
+			id,
+			course_name AS courseName,
+			teacher,
+			credit,
+			start_time AS startTime,
+			end_time AS endTime
+		FROM
+			tm_score_choose
+		WHERE
+		 	is_delete = #{isDelete}
+	</select>
+	<!-- 根据id查询选课信息 -->
+	<select id="findById" resultType="ChooseCourse" parameterType="TmParams">
+		SELECT
+			id,
+			course_name AS courseName,
+			teacher,
+			credit,
+			start_time AS startTime,
+			end_time AS endTime
+		FROM
+			tm_score_choose
+		WHERE
+			id = #{id}
+	</select>
+	<!-- 查询选修课信息 -->
+	<update id="update" parameterType="ChooseCourse">
+		UPDATE tm_score_choose
+		<set>
+	      <if test="courseName != null">course_name=#{courseName},</if>
+	      <if test="teacher != null">teacher=#{teacher},</if>
+	      <if test="credit != null">credit=#{credit},</if>
+	      <if test="startTime != null">start_time=#{startTime},</if>
+	      <if test="endTime != null">end_time=#{endTime}</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<!-- 删除选修课信息 -->
+	<update id="del" parameterType="TmParams">
+		UPDATE tm_score_choose set is_delete = 0 WHERE id=#{id}
+	</update>
+</mapper>

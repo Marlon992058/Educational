@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txsk.dao.IUserMapper" >
+	<!-- 根据id查询学生信息 -->
+	<select id="findById" resultType="User" parameterType="int">
+		SELECT
+			id,
+			username,
+			age,
+			sex,
+			c_id AS cId,
+			birthday
+		FROM tm_user 
+		WHERE id = #{id}
+	</select>
+	<!-- 查询学生信息 -->
+	<select id="lists" resultType="User" parameterType="TmParams">
+		SELECT
+			id,
+			username,
+			age,
+			sex,
+			u_id AS uId,
+			birthday,
+			join_time AS joinTime
+		FROM tm_user 
+		WHERE is_delete = #{isDelete}
+	</select>
+	
+	<!-- 添加新学生 -->
+	<insert id="add" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tm_user (username,age,sex,birthday) VALUES(#{username},#{age},#{sex},#{birthday})
+	</insert>
+	
+	<!-- 删除已毕业学生学籍 -->
+	<update id="del" parameterType="TmParams">
+		UPDATE tm_user SET is_delete = #{isDelete} WHERE id = #{id}
+	</update>
+	
+	<!-- 更新学生学籍 -->
+	<update id="update" parameterType="User">
+		UPDATE tm_user 
+		<set>
+	      <if test="username != null">username=#{username},</if>
+	      <if test="age != null">age=#{age},</if>
+	      <if test="sex != null">sex=#{sex},</if>
+	      <if test="birthday != null">birthday=#{birthday},</if>
+	      <if test="cId != null">c_id=#{cId}</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	
+	
+	<!-- 更新学生学籍 -->
+	<!-- <update id="updateById" parameterType="User">
+		UPDATE tm_user 
+		<set>
+	      <if test="username != null">username=#{username},</if>
+	      <if test="age != null">age=#{age},</if>
+	      <if test="sex != null">sex=#{sex},</if>
+	      <if test="sex != null">c_id=#{cId},</if>
+	      <if test="birthday != null">birthday=#{birthday}</if>
+		</set>
+		WHERE id=#{id}
+	</update> -->
+	
+	
+	<!-- 统计选修课人数 -->
+	<select id="getEcharts" resultType="java.util.HashMap">
+		SELECT
+			COUNT(1) AS counts,
+			tms.course_name AS courseName
+		FROM
+			tm_user tmu
+		LEFT JOIN tm_score_choose tms ON tms.id = tmu.c_id
+		GROUP BY
+			tmu.c_id 
+	</select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txsk.dao.IGradeMapper" >
+	<!-- 查询学生及成绩信息 -->
+	<select id="lists" resultType="Grade" parameterType="TmParams">
+		SELECT
+			tu.username,
+			tu.id,
+			ts.math,
+			ts.english,
+			ts.chinese,
+			ts.c_course AS cGrade,
+			ts.math+ts.chinese+ts.english+ts.c_course AS score,
+			tsc.course_name AS courseName
+		FROM
+			tm_user tu
+		LEFT JOIN tm_score ts ON tu.u_id = ts.id
+		LEFT JOIN tm_score_choose tsc ON tu.c_id = tsc.id
+		WHERE tu.is_delete = #{isDelete} 
+		<if test="id!=null"> AND tu.id = #{id} </if>
+		ORDER BY score DESC
+	</select>
+	
+	<!-- 查询课程信息 -->
+	<!-- <select id="getCoursesById" resultType="Course" parameterType="TmParams">
+		SELECT
+			math,
+			english,
+			chinese,
+			c_course,
+			score
+		FROM
+			tm_score
+		WHERE is_delete = #{isDelete}
+		ORDER BY score DESC
+	</select> -->
+	
+	<select id="percent" resultType="Grade">
+		SELECT DISTINCT
+			ROUND((SELECT COUNT(math)/(SELECT COUNT(1)FROM tm_score) FROM tm_score WHERE math>=90)*100,2)  AS math,
+			ROUND((SELECT COUNT(english)/(SELECT COUNT(1) FROM tm_score) FROM tm_score WHERE english>=90)*100,2)  AS english,
+			ROUND((SELECT COUNT(chinese)/(SELECT COUNT(1) FROM tm_score) FROM tm_score WHERE chinese>=90)*100,2)  AS chinese
+		FROM tm_score
+	</select>
+	
+	
+	<select id="avgs" resultType="Grade">
+		SELECT AVG(math) AS math,AVG(english) AS english,AVG(chinese) AS chinese,AVG(c_course) AS cGrade FROM tm_score
+	</select>
+	
+	
+</mapper>
